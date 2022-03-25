@@ -1,6 +1,7 @@
 import cv2
 import os
-
+import csv
+import numpy as np
 
 class ImageResizer:
 
@@ -63,6 +64,65 @@ class ImageResizer:
                 sub_folder = data_folder + folder
                 new_sub_folder = new_folder + folder
                 self.resize_all(sub_folder, new_sub_folder, percent)
+
+
+    """
+    Saves an image's data to a csv file
+    param image_path: String name of image file to be written to the csv_file
+    param csv_file: String name of csv file to be written to
+    param output_class: Output type associated with entire group of images
+    """
+    def image_to_data(self, image_path, csv_file, output_class):
+        img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+        data = np.array(img)
+        flattened = data.flatten()
+        final = np.append(flattened, output_class)
+
+        with open(csv_file, 'a+') as data_file:
+            writer = csv.writer(data_file)
+            writer.writerow(final)
+
+    """
+    Appends a single folder's images all as data of the specified output class
+    param class_folder: folder containing all images
+    param csv_file: csv that is being requested to be written to
+    param output_class: output class "Y" value associated with entire batch of images
+    """
+    def image_folder_to_data(self, class_folder, csv_file, output_class):
+        for root, dirs, files in os.walk(class_folder):
+            # Resizes all files in that specific folder
+            with open(csv_file, 'a+') as data_file:
+                writer = csv.writer(data_file)
+
+                # Loops through all images, appends them as data into the csv with the output_class
+                for image in files:
+                    img = cv2.imread(image, cv2.IMREAD_UNCHANGED)
+                    data = np.array(img)
+                    flattened = data.flatten()
+                    final = np.append(flattened, output_class)
+                    writer.writerow(final)
+
+    """
+    Converts all image data to csv data
+    param data_folder: Folder containing all subdata
+    param csv_name: Name of csv_file to be written to
+    """
+    def convert_folder_classes(self, data_folder, csv_name):
+
+        csv = open(data_folder + csv_name, 'a+')
+
+        # Loops through all folders in the main data folder
+        for root, dirs, files in os.walk(data_folder):
+            # Resizes all files in that specific folder
+
+            # Loops through all folders in this main folder
+            for folder in dirs:
+                self.image_folder_to_data(folder, data_folder + csv_name, folder)
+
+
+
+
+
 
 
 
