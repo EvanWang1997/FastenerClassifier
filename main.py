@@ -13,6 +13,7 @@ from ImageResize import ImageResizer
 if __name__ == '__main__':
 
     IR = ImageResizer()
-    IR.convert_folder_classes("./Data/TestClasses/", "group_data.csv")
+    IR.resize_all("./Data/TestClasses/", "./Data/TestClasses10%/", 10)
+    # IR.convert_folder_classes("./Data/TestClasses/", "group_data.csv")
 
 

@@ -52,18 +52,22 @@ class ImageResizer:
 
         # Lops through all files and folders in the root folder
         for root, dirs, files in os.walk(data_folder):
-            # Resizes all files in that specific folder
-            for filename in files:
-                self.resize_percent(data_folder, filename, new_folder, filename, percent)
 
             # Loops through all folders in this main folder
             for folder in dirs:
                 if not os.path.exists(folder):
                     os.makedirs(folder)
 
-                sub_folder = data_folder + folder
-                new_sub_folder = new_folder + folder
+                sub_folder = data_folder + folder + '/'
+                new_sub_folder = new_folder + folder + '/'
                 self.resize_all(sub_folder, new_sub_folder, percent)
+
+            # Resizes all files in that specific folder
+            for filename in files:
+                if (os.path.isfile(filename)):
+                    self.resize_percent(data_folder, filename, new_folder, filename, percent)
+
+
 
 
     """
