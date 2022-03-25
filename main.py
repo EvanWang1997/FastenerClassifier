@@ -13,6 +13,6 @@ from ImageResize import ImageResizer
 if __name__ == '__main__':
 
     IR = ImageResizer()
-    IR.image_to_data("./Data/DataTest/Test1.jpg", "./Data/DataTest/Test1.csv", "testing")
+    IR.convert_folder_classes("./Data/TestClasses/", "group_data.csv")
 
 

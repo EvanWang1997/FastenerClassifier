@@ -89,14 +89,15 @@ class ImageResizer:
     param output_class: output class "Y" value associated with entire batch of images
     """
     def image_folder_to_data(self, class_folder, csv_file, output_class):
-        for root, dirs, files in os.walk(class_folder):
-            # Resizes all files in that specific folder
-            with open(csv_file, 'a+') as data_file:
-                writer = csv.writer(data_file)
+        with open(csv_file, 'a+') as data_file:
+            writer = csv.writer(data_file)
 
+            for root, dirs, files in os.walk(class_folder):
                 # Loops through all images, appends them as data into the csv with the output_class
                 for image in files:
-                    img = cv2.imread(image, cv2.IMREAD_UNCHANGED)
+                    print(image)
+                    full_image_path = class_folder + '/' + image
+                    img = cv2.imread(full_image_path, cv2.IMREAD_UNCHANGED)
                     data = np.array(img)
                     flattened = data.flatten()
                     final = np.append(flattened, output_class)
@@ -108,7 +109,6 @@ class ImageResizer:
     param csv_name: Name of csv_file to be written to
     """
     def convert_folder_classes(self, data_folder, csv_name):
-
         csv = open(data_folder + csv_name, 'a+')
 
         # Loops through all folders in the main data folder
@@ -119,7 +119,8 @@ class ImageResizer:
             for folder in dirs:
                 folder_path_split = folder.split("/")
                 class_type = folder_path_split[-1]
-                self.image_folder_to_data(folder, data_folder + csv_name, class_type)
+
+                self.image_folder_to_data(data_folder + folder, data_folder + csv_name, class_type)
 
 
 
