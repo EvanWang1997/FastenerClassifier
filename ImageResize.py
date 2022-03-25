@@ -117,7 +117,9 @@ class ImageResizer:
 
             # Loops through all folders in this main folder
             for folder in dirs:
-                self.image_folder_to_data(folder, data_folder + csv_name, folder)
+                folder_path_split = folder.split("/")
+                class_type = folder_path_split[-1]
+                self.image_folder_to_data(folder, data_folder + csv_name, class_type)
 
 
 
