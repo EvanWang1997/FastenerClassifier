@@ -73,18 +73,21 @@ class ImageResizer:
     """
     Saves an image's data to a csv file
     param image_path: String name of image file to be written to the csv_file
-    param csv_file: String name of csv file to be written to
+    param file_name: String name of pickle file to be written to
     param output_class: Output type associated with entire group of images
     """
-    def image_to_data(self, image_path, csv_file, output_class):
+    def image_to_data(self, image_path, file_name, output_class):
         img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
         data = np.array(img)
         flattened = data.flatten()
         final = np.append(flattened, output_class)
 
-        with open(csv_file, 'a+') as data_file:
-            writer = csv.writer(data_file)
-            writer.writerow(final)
+        file = open(file_name, "rb")
+        data_array = pickle.load(file)
+        data_array = np.vstack([data_array, final])
+
+        data_file = open(file_name, 'wb')
+        pickle.dump(data_array, data_file)
 
     """
     Appends a single folder's images all as data of the specified output class
