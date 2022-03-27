@@ -1,6 +1,5 @@
 import cv2
 import os
-import csv
 import numpy as np
 import pickle
 
@@ -18,7 +17,6 @@ class ImageResizer:
     :param percent: Num percent to scale down to for original image file
     """
     def resize_percent(self, orig_data_folder, orig_file_name, conv_data_folder, conv_file_name, percent):
-        print("Running image conversion")
 
         # Gets original image from specified file in data
         full_file_path = orig_data_folder + orig_file_name
@@ -52,7 +50,7 @@ class ImageResizer:
         if not os.path.exists(new_folder):
             os.makedirs(new_folder)
 
-        # Lops through all files and folders in the root folder
+        # Loops through all files and folders in the root folder
         for root, dirs, files in os.walk(data_folder):
 
             # Loops through all folders in this main folder
@@ -66,9 +64,60 @@ class ImageResizer:
 
             # Resizes all files in that specific folder
             for filename in files:
-                if (os.path.isfile(filename)):
+                if (os.path.isfile(data_folder + filename)):
                     self.resize_percent(data_folder, filename, new_folder, filename, percent)
 
+    """
+    Changes a single image to be greyscale
+    :param data_folder: String name of data folder 
+    :param original_file_name: String name of original file
+    :param conv_file_name: String name of scaled down image file
+    """
+    def greyscale_image(self, orig_data_folder, orig_file_name, conv_data_folder, conv_file_name):
+
+        # Gets original image from specified file in data
+        full_file_path = orig_data_folder + orig_file_name
+        img = cv2.imread(full_file_path, cv2.IMREAD_UNCHANGED)
+
+        # resize image
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Creates converted data folder if converted data folder did not exist
+        if not os.path.exists(conv_data_folder):
+            os.makedirs(conv_data_folder)
+
+        # Saves resized image to converted data folder
+        full_new_file_path = conv_data_folder + conv_file_name
+        cv2.imwrite(full_new_file_path, grey)
+
+    """
+    Converts all image data inside of a datafolder to greyscale version
+    :param data_folder: String name of data folder 
+    :param new_folder: String name of new data folder to put the data into
+    :param percent: Num percent to scale down to for each image file
+    """
+    def greyscale_all(self, data_folder, new_folder):
+        print("new greyscale")
+        # Creates a new folder if the new folder name did not exist
+        if not os.path.exists(new_folder):
+            os.makedirs(new_folder)
+
+        # Loops through all files and folders in the root folder
+        for root, dirs, files in os.walk(data_folder):
+
+            # Loops through all folders in this main folder
+            for folder in dirs:
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
+
+                sub_folder = data_folder + folder + '/'
+                new_sub_folder = new_folder + folder + '/'
+                self.greyscale_all(sub_folder, new_sub_folder)
+
+            # Resizes all files in that specific folder
+            for filename in files:
+                if (os.path.isfile(data_folder + filename)):
+                    self.greyscale_image(data_folder, filename, new_folder, filename)
 
     """
     Saves an image's data to a csv file
