@@ -13,8 +13,10 @@ from ImageResize import ImageResizer
 if __name__ == '__main__':
 
     IR = ImageResizer()
-    IR.greyscale_all("./Data/TestClasses/", "./Data/TestClassesgrey/")
-    # IR.convert_folder_classes("./Data/TestClasses/", "group_data.pkl")
-    # data = IR.load_data("./Data/TestClasses/group_data.pkl")
+    # IR.greyscale_all("./Data/Classes25%/", "./Data/Classesgrey25%/")
+    # IR.resize_all("./Data/Classes/", "./Data/Classes25%/", 25)
+    IR.convert_folder_classes("./Data/Classes25%/", "25%.pkl")
+    # data = IR.load_data("./Data/Classes10%/10%.pkl")
+
 
 
