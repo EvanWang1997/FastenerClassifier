@@ -97,7 +97,6 @@ class ImageResizer:
     :param percent: Num percent to scale down to for each image file
     """
     def greyscale_all(self, data_folder, new_folder):
-        print("new greyscale")
         # Creates a new folder if the new folder name did not exist
         if not os.path.exists(new_folder):
             os.makedirs(new_folder)
@@ -155,7 +154,7 @@ class ImageResizer:
                     flattened = data.flatten()
                     final = np.array(np.append(flattened, output_class))
 
-                    if data_array.shape == (0,0):
+                    if data_array.shape == (0, 0):
                         data_array = np.array([final])
                     else:
                         data_array = np.vstack([data_array, final])
