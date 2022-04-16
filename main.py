@@ -42,17 +42,17 @@ if __name__ == '__main__':
     print(type(y_train[1]))
     BC = BoltClassifier()
 
-    model = keras.models.load_model("./Models/prelim_model_parallel")
+    # model = keras.models.load_model("./Models/prelim_model_parallel")
 
-    # model = BC.create_model()
-    # model.summary()
-    #
-    # model.compile(optimizer='adam',
-    #               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    #               metrics=['accuracy'])
-    #
-    # history = model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
-    # model.save("./Models/prelim_model_parallel")
+    model = BC.create_model()
+    model.summary()
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+
+    history = model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
+    model.save("./Models/prelim_model_parallel")
 
     y_pred = model.predict(X_test)
     y_pred = np.argmax(y_pred, axis=1)
