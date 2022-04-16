@@ -194,6 +194,14 @@ class ImageResizer:
         data_array = pickle.load(file)
         return data_array
 
+    """
+    Stores the data specified in the data parameters into the file located at file_name
+    Overwrites previous data
+    """
+    def store_data(selfself, file_name, data):
+        file = open(file_name, "wb")
+        pickle.dump(data, file)
+
 
 
 
