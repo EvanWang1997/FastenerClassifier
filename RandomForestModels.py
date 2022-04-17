@@ -23,7 +23,7 @@ class RandomForestModels:
     def createModels(self, modelsfolder, nummodels, kmfunction, xtrain, ytrain, epochs, testingdata):
 
         self.nummodels = nummodels
-
+        self.models = []
         if not os.path.exists(modelsfolder):
             os.makedirs(modelsfolder)
 
@@ -33,7 +33,7 @@ class RandomForestModels:
                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                           metrics=['accuracy'])
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
-            self.models[i] = model
+            self.models.append(model)
             model.save(modelsfolder + "/" + i)
 
 
