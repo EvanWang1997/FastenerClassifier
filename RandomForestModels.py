@@ -34,7 +34,7 @@ class RandomForestModels:
                           metrics=['accuracy'])
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
-            model.save(modelsfolder + "/" + i)
+            model.save(modelsfolder + "/" + str(i))
 
 
     # Loads models from the specified models folder

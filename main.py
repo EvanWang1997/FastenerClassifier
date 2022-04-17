@@ -19,7 +19,7 @@ from RandomForestModels import RandomForestModels
 if __name__ == '__main__':
     np.random.seed(69420)
     IR = ImageResizer()
-    data = IR.load_data("./Data/grey10%parallel.pkl")
+    data = IR.load_data("./Data/grey10%.pkl")
     v, h = np.shape(data)
     np.random.shuffle(data)
     train, test, validate = np.split(data, [int(.6 * v), int(.9 * v)])
@@ -36,12 +36,6 @@ if __name__ == '__main__':
 
     FM = RandomForestModels()
 
-
-    # model1 = keras.models.load_model("./Models/prelim_model_1")
-    # model2 = keras.models.load_model("./Models/prelim_model_2")
-    # model3 = keras.models.load_model("./Models/prelim_model_3")
-    # model4 = keras.models.load_model("./Models/prelim_model_4")
-    # model5 = keras.models.load_model("./Models/prelim_model_5")
 
     FM.createModels("./Models/8models", 8, BC.create_model, X_train, y_train, 20, (X_test, y_test))
     y_pred = FM.predictValues(X_validate)
