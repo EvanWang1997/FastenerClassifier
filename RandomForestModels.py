@@ -2,6 +2,7 @@ import tensorflow as tf
 import keras as ks
 import os
 import numpy as np
+import BoltClassifier
 
 class RandomForestModels:
 
@@ -28,7 +29,10 @@ class RandomForestModels:
 
         for i in range(nummodels):
             model = kmfunction()
-            model.fit(xtrain, ytrain, epochs, testingdata)
+            model.compile(optimizer='adam',
+                          loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                          metrics=['accuracy'])
+            model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models[i] = model
             model.save(modelsfolder + "/" + i)
 

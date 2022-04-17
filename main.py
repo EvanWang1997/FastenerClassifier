@@ -35,7 +35,7 @@ if __name__ == '__main__':
     BC = BoltClassifier()
 
     FM = RandomForestModels()
-    FM.loadModels("./Models")
+
 
     # model1 = keras.models.load_model("./Models/prelim_model_1")
     # model2 = keras.models.load_model("./Models/prelim_model_2")
@@ -43,6 +43,7 @@ if __name__ == '__main__':
     # model4 = keras.models.load_model("./Models/prelim_model_4")
     # model5 = keras.models.load_model("./Models/prelim_model_5")
 
+    FM.createModels("./Models/8models", 8, BC.create_model, X_train, y_train, 20, (X_test, y_test))
     y_pred = FM.predictValues(X_validate)
 
     # model = BC.create_model()
