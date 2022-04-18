@@ -9,6 +9,7 @@ class BoltClassifier:
         self.model = models.Sequential()
 
     def create_model(self):
+        self.model = models.Sequential()
         self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(288, 216, 1)))
         self.model.add(layers.MaxPool2D())
 
