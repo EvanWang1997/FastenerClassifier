@@ -28,6 +28,7 @@ class RandomForestModels:
             os.makedirs(modelsfolder)
 
         for i in range(nummodels):
+            print("start")
             model = kmfunction()
             model.compile(optimizer='adam',
                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -35,6 +36,8 @@ class RandomForestModels:
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
+            print("completed 1 model")
+            del model
 
 
     # Loads models from the specified models folder

@@ -37,7 +37,7 @@ if __name__ == '__main__':
     FM = RandomForestModels()
 
 
-    FM.createModels("./Models/8models", 8, BC.create_model, X_train, y_train, 20, (X_test, y_test))
+    FM.createModels("./Models/8models", 3, BC.create_model, X_train, y_train, 2, (X_test, y_test))
     y_pred = FM.predictValues(X_validate)
 
     # model = BC.create_model()
