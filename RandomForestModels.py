@@ -3,6 +3,7 @@ import keras as ks
 import os
 import numpy as np
 import BoltClassifier
+import utils
 
 class RandomForestModels:
 
@@ -21,14 +22,12 @@ class RandomForestModels:
     # epochs: Number of epochs to be trained for, for each model
     # testeingdata: testing data used to validate each model during the epochs
     def createModels(self, modelsfolder, nummodels, kmfunction, xtrain, ytrain, epochs, testingdata):
-
         self.nummodels = nummodels
         self.models = []
         if not os.path.exists(modelsfolder):
             os.makedirs(modelsfolder)
 
         for i in range(nummodels):
-            print("start")
             model = kmfunction()
             model.compile(optimizer='adam',
                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -36,9 +35,25 @@ class RandomForestModels:
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
-            print("completed 1 model")
             del model
 
+    def createRandomDataModels(self, modelsfolder, nummodels, kmfunction, data, epochs):
+        self.nummodels = nummodels
+        self.models = []
+
+        if not os.path.exists(modelsfolder):
+            os.makedirs(modelsfolder)
+
+        for i in range(nummodels):
+            xtrain, ytrain, xtest, ytest = utils.train_and_test_split(data)
+            model = kmfunction()
+            model.compile(optimizer='adam',
+                          loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                          metrics=['accuracy'])
+            model.fit(xtrain, ytrain, epochs=epochs, validation_data=(xtest, ytest))
+            self.models.append(model)
+            model.save(modelsfolder + "/" + str(i))
+            del model
 
     # Loads models from the specified models folder
     # Stores them all into the models array for an instance of this class

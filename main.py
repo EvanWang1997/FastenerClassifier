@@ -25,14 +25,20 @@ if __name__ == '__main__':
     FM = RandomForestModels()
     data = IR.load_data("./Data/grey10%.pkl")
     X_train, y_train, X_test, y_test, X_validate, y_validate = utils.process_and_split_data(data)
+    # X_validate, y_validate = utils.return_all_validation_data(data)
     # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
+    #
+    # ret, threshTrain = cv2.threshold(X_train, 150, 255, cv2.THRESH_BINARY)
+    # ret, threshTest = cv2.threshold(X_test, 150, 255, cv2.THRESH_BINARY)
+    # ret, threshValidate = cv2.threshold(X_validate, 150, 255, cv2.THRESH_BINARY)
+
+    # print(np.shape(threshTrain))
 
     # model = tf.keras.models.load_model("./Models/prelim_model")
 
-    FM.createModels("./Models/8models", 8, BC.create_model, X_train, y_train, 20, (X_test, y_test))
-    # FM.loadModels("./Models/5models")
+    FM.createRandomDataModels("./Models/5modelTrainTestRandom", 5, BC.create_model, data, 20)
+    # FM.loadModels("./Models/5modelUnnormal")
     y_pred = FM.predictValues(X_validate)
-
 
     # model.evaluate(X_test, y_test)
     print(classification_report(y_validate, y_pred))
