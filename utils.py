@@ -12,6 +12,14 @@ def process_and_split_data(data):
     X_test = X_test.reshape(np.shape(X_test)[0], 216, 288, 1)
     y_test = test[:, h - 1]
     X_validate = (validate[:, :h - 1]) / 255
-    X_validate = X_validate.reshape(np.shape(X_validate)[0], 216, 288, 1)
+
     y_validate = validate[:, h - 1]
     return X_train, y_train, X_test, y_test, X_validate, y_validate
+
+def return_all_validation_data(data):
+    v, h = np.shape(data)
+    X_validate = (data[:, :h - 1]) / 255
+    X_validate = X_validate.reshape(np.shape(X_validate)[0], 216, 288, 1)
+    y_validate = data[:, h - 1]
+
+    return X_validate, y_validate
