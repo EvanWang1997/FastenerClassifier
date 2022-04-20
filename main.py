@@ -17,20 +17,24 @@ from DataAugmentation import DataAugmentation
 from utils import process_and_split_data
 
 if __name__ == '__main__':
-    np.random.seed(42069)
+    np.random.seed(69420)
     IR = ImageResizer()
     BC = BoltClassifier()
     DA = DataAugmentation()
     FM = RandomForestModels()
+    FIM = RandomForestModels()
     data = IR.load_data("./Data/grey10%parallel.pkl")
     X_train, y_train, X_test, y_test, X_validate, y_validate = process_and_split_data(data)
     X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
 
     # model = tf.keras.models.load_model("./Models/prelim_model")
 
-    FM.createModels("./Models/1models", 1, BC.create_model, X_aug, y_aug, 10, (X_test, y_test))
-    # FM.loadModels("./Models/3models")
+    # FM.createModels("./Models/5models", 5, BC.create_model, X_aug, y_aug, 10, (X_test, y_test))
+    FM.loadModels("./Models/5models")
+    # FIM.createIndModels("./Models/5indmodels", 5, BC.create_model, X_aug, y_aug, 10, (X_test, y_test))
+    FIM.loadModels("./Models/5indmodels")
     y_pred = FM.predictValues(X_validate)
+    y_ind_pred = FIM.predictValues(X_validate)
 
     # model = BC.create_model()
     # model.summary()
@@ -42,6 +46,7 @@ if __name__ == '__main__':
     # history = model.fit(X_train, y_train, epochs=10, validation_data=(X_test, y_test))
     # model.save("./Models/prelim_model_5")
 
-    print(y_test)
+    # print(y_test)
     # model.evaluate(X_test, y_test)
     print(classification_report(y_validate, y_pred))
+    print(classification_report(y_validate, y_ind_pred))
