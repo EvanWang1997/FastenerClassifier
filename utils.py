@@ -38,6 +38,17 @@ def return_all_validation_data(data):
     return X_validate, y_validate
 
 
+def data_validation_split(data):
+    v, h = np.shape(data)
+    np.random.shuffle(data)
+    data, valid = np.split(data, [int(.7 * v)])
+
+    X_validate = (valid[:, :h - 1]) / 255
+    X_validate = X_validate.reshape(np.shape(X_validate)[0], 216, 288, 1)
+    y_validate = valid[:, h - 1]
+
+    return data, X_validate, y_validate
+
 
 def thresh_and_split(data, thresh):
     v, h = np.shape(data)

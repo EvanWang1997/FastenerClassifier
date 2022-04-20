@@ -23,9 +23,11 @@ if __name__ == '__main__':
     BC = BoltClassifier()
     DA = DataAugmentation()
     FM = RandomForestModels()
-    data = IR.load_data("./Data/grey10%.pkl")
-    datathresh = utils.thresh_all(data, 125)
-    X_train, y_train, X_test, y_test, X_validate, y_validate = utils.process_and_split_data(data)
+    data1 = IR.load_data("./Data/grey10%.pkl")
+    data2 = IR.load_data("./Data/ValidationSet")
+    data = np.vstack((data1, data2))
+    datathresh = utils.thresh_all(data, 120)
+    data, X_validate, y_validate = utils.data_validation_split(data)
     # data = utils.thresh_all(data, 120)
     # X_validate, y_validate = utils.return_all_validation_data(data)
     # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
@@ -34,7 +36,7 @@ if __name__ == '__main__':
     # ret, threshTest = cv2.threshold(X_test, 150, 255, cv2.THRESH_BINARY)
     # ret, threshValidate = cv2.threshold(X_validate, 150, 255, cv2.THRESH_BINARY)
 
-    FM.createRandomDataModels("./Models/5modelThreshOriginalData", 5, BC.create_model, data, 20)
+    FM.createRandomDataModels("./Models/AllDataThresh120", 10, BC.create_model, data, 20)
     # FM.loadModels("./Models/5modelThresh")
     y_pred = FM.predictValues(X_validate)
 
