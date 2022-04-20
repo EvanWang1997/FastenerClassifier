@@ -1,5 +1,5 @@
 import numpy as np
-
+from ThresholdContour import ThresholdContour
 
 def process_and_split_data(data):
     v, h = np.shape(data)
@@ -36,3 +36,31 @@ def return_all_validation_data(data):
     y_validate = data[:, h - 1]
 
     return X_validate, y_validate
+
+
+
+def thresh_and_split(data, thresh):
+    v, h = np.shape(data)
+    np.random.shuffle(data)
+
+    X = (data[:, :h - 1])
+    y = (data[:, h - 1])
+
+    TC = ThresholdContour()
+    Xcontour = TC.ThresholdAllData(X, thresh)
+    y = np.reshape(y, (v,1))
+    final_data = np.hstack((Xcontour, y))
+
+    return process_and_split_data(final_data)
+
+def thresh_all(data, thresh):
+    v, h = np.shape(data)
+    np.random.shuffle(data)
+    X = (data[:, :h - 1])
+    y = (data[:, h - 1])
+    TC = ThresholdContour()
+    Xcontour = TC.ThresholdAllData(X, thresh)
+    y = np.reshape(y, (v,1))
+    final_data = np.hstack((Xcontour, y))
+
+    return final_data

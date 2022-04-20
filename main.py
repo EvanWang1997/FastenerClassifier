@@ -15,7 +15,7 @@ from ImageResize import ImageResizer
 from BoltClassifier import BoltClassifier
 from RandomForestModels import RandomForestModels
 from DataAugmentation import DataAugmentation
-
+from ThresholdContour import ThresholdContour
 
 if __name__ == '__main__':
     np.random.seed(42069)
@@ -24,7 +24,9 @@ if __name__ == '__main__':
     DA = DataAugmentation()
     FM = RandomForestModels()
     data = IR.load_data("./Data/grey10%.pkl")
+    datathresh = utils.thresh_all(data, 125)
     X_train, y_train, X_test, y_test, X_validate, y_validate = utils.process_and_split_data(data)
+    # data = utils.thresh_all(data, 120)
     # X_validate, y_validate = utils.return_all_validation_data(data)
     # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
     #
@@ -32,12 +34,8 @@ if __name__ == '__main__':
     # ret, threshTest = cv2.threshold(X_test, 150, 255, cv2.THRESH_BINARY)
     # ret, threshValidate = cv2.threshold(X_validate, 150, 255, cv2.THRESH_BINARY)
 
-    # print(np.shape(threshTrain))
-
-    # model = tf.keras.models.load_model("./Models/prelim_model")
-
-    FM.createRandomDataModels("./Models/5modelTrainTestRandom", 5, BC.create_model, data, 20)
-    # FM.loadModels("./Models/5modelUnnormal")
+    FM.createRandomDataModels("./Models/5modelThreshOriginalData", 5, BC.create_model, data, 20)
+    # FM.loadModels("./Models/5modelThresh")
     y_pred = FM.predictValues(X_validate)
 
     # model.evaluate(X_test, y_test)
