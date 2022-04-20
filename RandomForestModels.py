@@ -5,6 +5,7 @@ import numpy as np
 import BoltClassifier
 import keras_tuner as kt
 
+import utils
 
 class RandomForestModels:
 
@@ -23,14 +24,12 @@ class RandomForestModels:
     # epochs: Number of epochs to be trained for, for each model
     # testeingdata: testing data used to validate each model during the epochs
     def createModels(self, modelsfolder, nummodels, kmfunction, xtrain, ytrain, epochs, testingdata):
-
         self.nummodels = nummodels
         self.models = []
         if not os.path.exists(modelsfolder):
             os.makedirs(modelsfolder)
 
         for i in range(nummodels):
-            print("start")
             model = kmfunction()
             model.compile(optimizer='adam',
                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -38,7 +37,24 @@ class RandomForestModels:
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
-            print("completed ", i+1, " models out of ", nummodels)
+            del model
+
+    def createRandomDataModels(self, modelsfolder, nummodels, kmfunction, data, epochs):
+        self.nummodels = nummodels
+        self.models = []
+
+        if not os.path.exists(modelsfolder):
+            os.makedirs(modelsfolder)
+
+        for i in range(nummodels):
+            xtrain, ytrain, xtest, ytest = utils.train_and_test_split(data)
+            model = kmfunction()
+            model.compile(optimizer='adam',
+                          loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                          metrics=['accuracy'])
+            model.fit(xtrain, ytrain, epochs=epochs, validation_data=(xtest, ytest))
+            self.models.append(model)
+            model.save(modelsfolder + "/" + str(i))
             del model
 
     # Function for creating models from keras
@@ -60,7 +76,8 @@ class RandomForestModels:
 
         for i in range(nummodels):
             print("start")
-            random_indices = np.random.choice(xtrain.shape[0], size=int(sample_ratio * xtrain.shape[0]), replace=False)
+            random_indices = np.random.choice(xtrain.shape[0], size=int(sample_ratio * xtrain.shape[0]),
+                                              replace=False)
             x_rand_sample = xtrain[random_indices, :]
             y_rand_sample = ytrain[random_indices]
             model = kmfunction()
@@ -70,7 +87,7 @@ class RandomForestModels:
             model.fit(x_rand_sample, y_rand_sample, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
-            print("completed ", i+1, " models out of ", nummodels)
+            print("completed ", i + 1, " models out of ", nummodels)
             del model
 
     # Function for creating models from keras

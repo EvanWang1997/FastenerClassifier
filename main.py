@@ -8,13 +8,14 @@ import sklearn as sklearn
 import cv2
 import tensorflow as tf
 from keras import layers, models
+import utils
 from sklearn.metrics import classification_report
 
 from ImageResize import ImageResizer
 from BoltClassifier import BoltClassifier
 from RandomForestModels import RandomForestModels
 from DataAugmentation import DataAugmentation
-from utils import process_and_split_data
+
 
 if __name__ == '__main__':
     np.random.seed(69420)
@@ -23,9 +24,16 @@ if __name__ == '__main__':
     DA = DataAugmentation()
     FM = RandomForestModels()
     FIM = RandomForestModels()
-    data = IR.load_data("./Data/grey10%parallel.pkl")
-    X_train, y_train, X_test, y_test, X_validate, y_validate = process_and_split_data(data)
-    X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
+    data = IR.load_data("./Data/grey10%.pkl")
+    X_train, y_train, X_test, y_test, X_validate, y_validate = utils.process_and_split_data(data)
+    # X_validate, y_validate = utils.return_all_validation_data(data)
+    # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
+    #
+    # ret, threshTrain = cv2.threshold(X_train, 150, 255, cv2.THRESH_BINARY)
+    # ret, threshTest = cv2.threshold(X_test, 150, 255, cv2.THRESH_BINARY)
+    # ret, threshValidate = cv2.threshold(X_validate, 150, 255, cv2.THRESH_BINARY)
+
+    # print(np.shape(threshTrain))
 
     # model = tf.keras.models.load_model("./Models/prelim_model")
 
