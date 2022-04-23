@@ -16,6 +16,7 @@ def process_and_split_data(data):
     y_validate = validate[:, h - 1]
     return X_train, y_train, X_test, y_test, X_validate, y_validate
 
+
 def train_and_test_split(data):
     v, h = np.shape(data)
     np.random.shuffle(data)
@@ -28,6 +29,7 @@ def train_and_test_split(data):
     y_test = test[:, h - 1]
 
     return X_train, y_train, X_test, y_test
+
 
 def return_all_validation_data(data):
     v, h = np.shape(data)

@@ -12,7 +12,7 @@ class DataAugmentation:
     # Function for augmenting data
     # Params:
     # X: numpy_ndarray containing samples to augment
-    # y: numpr_array containing labels of samples
+    # y: numpy_array containing labels of samples
     # batch_size: amount of samples to augment at a time in X
     # returns:
     # X_concat: concatenation of original and augmented samples
