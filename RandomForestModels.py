@@ -7,6 +7,7 @@ import keras_tuner as kt
 
 import utils
 
+
 class RandomForestModels:
 
     def __init__(self):
@@ -108,10 +109,18 @@ class RandomForestModels:
 
         for i in range(nummodels):
             print("start")
-            model = kmfunction(kt)
-            model.compile(optimizer='adam',
-                          loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                          metrics=['accuracy'])
+            tuner = kt.rRandomSeach(kmfunction,
+                                 objective='val_accuracy',
+                                 max_trials=5,
+                                 executions_per_trial=3,
+                                 directory='tuner1',
+                                 project_name='Clothing')
+            tuner.search_space_summary()
+            stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+            tuner.search(xtrain, ytrain, epochs=10, validation_data=testingdata, callbacks=[stop_early])
+            tuner.results_summary()
+            best_hps = tuner.get_best_hyperparameters()[0]
+            model = tuner.hypermodel.build(best_hps)
             model.fit(xtrain, ytrain, epochs=epochs, validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
