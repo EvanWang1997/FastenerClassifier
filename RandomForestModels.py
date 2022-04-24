@@ -109,7 +109,7 @@ class RandomForestModels:
 
         for i in range(nummodels):
             print("start")
-            tuner = kt.rRandomSeach(kmfunction,
+            tuner = kt.RandomSearch(kmfunction,
                                  objective='val_accuracy',
                                  max_trials=5,
                                  executions_per_trial=3,
