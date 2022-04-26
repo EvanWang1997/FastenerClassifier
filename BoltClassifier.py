@@ -1,11 +1,14 @@
 import tensorflow as tf
 
-from keras import layers, models
+from keras import layers, models, Model
+from keras.applications.densenet import DenseNet121
+from keras.layers import GlobalAveragePooling2D, BatchNormalization, Dropout, Dense
 
 
 class BoltClassifier:
 
     def __init__(self):
+        self.x = None
         self.model = models.Sequential()
 
     def create_model(self):
@@ -51,4 +54,27 @@ class BoltClassifier:
         self.model.compile(optimizer='adam',
                       loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                       metrics=['accuracy'])
+        return self.model
+
+    def create_dense_model(self):
+        densemodel = DenseNet121(weights='imagenet',include_top=False, input_shape=(216, 288, 3))
+        x = densemodel.output
+
+        x = GlobalAveragePooling2D()(x)
+        x = BatchNormalization()(x)
+        x = Dropout(0.5)(x)
+        x = Dense(1024, activation='relu')(x)
+        x = Dense(512, activation='relu')(x)
+        x = BatchNormalization()(x)
+        x = Dropout(0.5)(x)
+
+        preds = Dense(11, activation='softmax')(x)
+        self.model = Model(inputs=densemodel.input, outputs=preds)
+        for layer in self.model.layers[:-8]:
+            layer.trainable = False
+
+        for layer in self.model.layers[-8:]:
+            layer.trainable = True
+        self.model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                           metrics=['accuracy'])
         return self.model

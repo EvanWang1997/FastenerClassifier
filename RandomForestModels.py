@@ -2,6 +2,8 @@ import tensorflow as tf
 import keras as ks
 import os
 import numpy as np
+from keras.callbacks import ReduceLROnPlateau
+
 import BoltClassifier
 import keras_tuner as kt
 
@@ -58,6 +60,27 @@ class RandomForestModels:
             model.save(modelsfolder + "/" + str(i))
             del model
 
+    def createDenseModels(self, modelsfolder, nummodels, kmfunction, xtrain, ytrain, epochs, testingdata):
+        self.nummodels = nummodels
+        self.models = []
+        sample_ratio = 0.6
+        if not os.path.exists(modelsfolder):
+            os.makedirs(modelsfolder)
+
+        for i in range(nummodels):
+            print("start")
+            random_indices = np.random.choice(xtrain.shape[0], size=int(sample_ratio * xtrain.shape[0]),
+                                              replace=False)
+            x_rand_sample = xtrain[random_indices, :]
+            y_rand_sample = ytrain[random_indices]
+            model = kmfunction()
+            anne = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, min_lr=1e-3)
+            model.fit(x_rand_sample, y_rand_sample, epochs=epochs, callbacks=[anne], validation_data=testingdata)
+            self.models.append(model)
+            model.save(modelsfolder + "/" + str(i))
+            print("completed ", i + 1, " models out of ", nummodels)
+            del model
+
     # Function for creating models from keras
     # Params:
     # modelfolder: Name of folder to persistently store all of the models desired
@@ -107,14 +130,14 @@ class RandomForestModels:
         if not os.path.exists(modelsfolder):
             os.makedirs(modelsfolder)
 
+        print("start")
         for i in range(nummodels):
-            print("start")
             tuner = kt.RandomSearch(kmfunction,
-                                 objective='val_accuracy',
-                                 max_trials=5,
-                                 executions_per_trial=3,
-                                 directory='tuner1',
-                                 project_name='Clothing')
+                                    objective='val_accuracy',
+                                    max_trials=5,
+                                    executions_per_trial=3,
+                                    directory='tuner1',
+                                    project_name='Clothing')
             tuner.search_space_summary()
             stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
             tuner.search(xtrain, ytrain, epochs=10, validation_data=testingdata, callbacks=[stop_early])

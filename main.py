@@ -7,7 +7,11 @@ import matplotlib.pyplot as pyplot
 import sklearn as sklearn
 import cv2
 import tensorflow as tf
-from keras import layers, models
+from keras import layers, models, Model
+from keras.applications.densenet import DenseNet121
+from keras.callbacks import ReduceLROnPlateau
+from keras.layers import GlobalAveragePooling2D, BatchNormalization, Dropout, Dense
+
 import utils
 from sklearn.metrics import classification_report
 
@@ -19,16 +23,16 @@ from DataAugmentation import DataAugmentation
 
 if __name__ == '__main__':
     np.random.seed(69420)
-    tf.config.list_physical_devices('GPU')
-    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+    # tf.config.list_physical_devices('GPU')
+    # print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
     IR = ImageResizer()
     BC = BoltClassifier()
     DA = DataAugmentation()
     FM = RandomForestModels()
     FIM = RandomForestModels()
-    data = IR.load_data("./Data/grey10%.pkl")
-    X_train, y_train, X_test, y_test, X_validate, y_validate = utils.process_and_split_data(data)
-    # X_validate, y_validate = utils.return_all_validation_data(data)
+    data = IR.load_data("./Data/10%.pkl")
+    data, X_validate, y_validate = utils.color_data_validation_split(data)
+    X_train, y_train, X_test, y_test = utils.color_train_test_split(data)
     X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
     #
     # ret, threshTrain = cv2.threshold(X_train, 150, 255, cv2.THRESH_BINARY)
@@ -38,12 +42,35 @@ if __name__ == '__main__':
     # print(np.shape(threshTrain))
 
     # model = tf.keras.models.load_model("./Models/prelim_model")
+    densemodel = DenseNet121(weights='imagenet', include_top=False, input_shape=(216, 288, 3))
+    x = densemodel.output
 
-    FM.createHyperModels("./Models/1models", 1, BC.create_hyper_model, X_aug, y_aug, 10, (X_test, y_test))
+    x = GlobalAveragePooling2D()(x)
+    x = BatchNormalization()(x)
+    x = Dropout(0.5)(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    x = BatchNormalization()(x)
+    x = Dropout(0.5)(x)
+
+    preds = Dense(11, activation='softmax')(x)
+    model = Model(inputs=densemodel.input, outputs=preds)
+    # for layer in model.layers[:-8]:
+    #     layer.trainable = False
+    #
+    # for layer in model.layers[-8:]:
+    #     layer.trainable = True
+    model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
+    anne = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, min_lr=1e-3)
+    model.fit(X_aug, y_aug, epochs=10, callbacks=[anne], validation_data=(X_test, y_test))
+    model.save("./Models/dense1models")
+    y_pred = model.predict(X_validate)
+
+    # FM.createDenseModels("./Models/1models", 1, BC.create_dense_model, X_aug, y_aug, 50, (X_test, y_test))
     # FM.loadModels("./Models/5models")
     # FIM.createIndModels("./Models/5indmodels", 5, BC.create_model, X_aug, y_aug, 10, (X_test, y_test))
     # FIM.loadModels("./Models/5indmodels")
-    y_pred = FM.predictValues(X_validate)
+    # y_pred = FM.predictValues(X_validate)
     # y_ind_pred = FIM.predictValues(X_validate)
 
     # model = BC.create_model()
