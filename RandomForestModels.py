@@ -58,6 +58,24 @@ class RandomForestModels:
             model.save(modelsfolder + "/" + str(i))
             del model
 
+    def createRandomColorModels(self, modelsfolder, nummodels, kmfunction, data, epochs):
+        self.nummodels = nummodels
+        self.models = []
+
+        if not os.path.exists(modelsfolder):
+            os.makedirs(modelsfolder)
+
+        for i in range(nummodels):
+            xtrain, ytrain, xtest, ytest = utils.color_train_test_split(data)
+            model = kmfunction()
+            model.compile(optimizer='adam',
+                          loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                          metrics=['accuracy'])
+            model.fit(xtrain, ytrain, epochs=epochs, validation_data=(xtest, ytest))
+            self.models.append(model)
+            model.save(modelsfolder + "/" + str(i))
+            del model
+
     # Function for creating models from keras
     # Params:
     # modelfolder: Name of folder to persistently store all of the models desired

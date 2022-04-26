@@ -16,6 +16,20 @@ BoltClassMapping = {'11': 0,
                     '24': 9,
                     '25': 10}
 
+MetricImperialMapping = {
+    0:0,
+    1:0,
+    2:0,
+    3:0,
+    4:0,
+    5:0,
+    6:1,
+    7:1,
+    8:1,
+    9:1,
+    10:1
+}
+
 class DataRectifier:
 
     def __init__(self):
@@ -37,5 +51,16 @@ class DataRectifier:
         data = np.hstack((X, y))
         IR.store_data(datafilepath, data)
 
+    def imperial_metric_datamap(self, data):
+        v, h = np.shape(data)
+        y = data[:, h-1]
+        y = np.array([self.mi_map(yi) for yi in y])
+        data[:, h-1] = y
+
+        return data
+
     def class_map(self, bolt_number):
         return BoltClassMapping[bolt_number]
+
+    def mi_map(self, bolt_number):
+        return MetricImperialMapping[bolt_number]
