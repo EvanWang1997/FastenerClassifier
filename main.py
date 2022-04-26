@@ -42,35 +42,35 @@ if __name__ == '__main__':
     # print(np.shape(threshTrain))
 
     # model = tf.keras.models.load_model("./Models/prelim_model")
-    densemodel = DenseNet121(weights='imagenet', include_top=False, input_shape=(216, 288, 3))
-    x = densemodel.output
-
-    x = GlobalAveragePooling2D()(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.5)(x)
-    x = Dense(1024, activation='relu')(x)
-    x = Dense(512, activation='relu')(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.5)(x)
-
-    preds = Dense(11, activation='softmax')(x)
-    model = Model(inputs=densemodel.input, outputs=preds)
-    # for layer in model.layers[:-8]:
+    # densemodel = DenseNet121(weights='imagenet', include_top=False, input_shape=(216, 288, 3))
+    # x = densemodel.output
+    #
+    # x = GlobalAveragePooling2D()(x)
+    # x = BatchNormalization()(x)
+    # x = Dropout(0.5)(x)
+    # x = Dense(1024, activation='relu')(x)
+    # x = Dense(512, activation='relu')(x)
+    # x = BatchNormalization()(x)
+    # x = Dropout(0.5)(x)
+    #
+    # preds = Dense(11, activation='softmax')(x)
+    # model = Model(inputs=densemodel.input, outputs=preds)
+    # for layer in model.layers[:-12]:
     #     layer.trainable = False
     #
-    # for layer in model.layers[-8:]:
+    # for layer in model.layers[-12:]:
     #     layer.trainable = True
-    model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
-    anne = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, min_lr=1e-3)
-    model.fit(X_aug, y_aug, epochs=10, callbacks=[anne], validation_data=(X_test, y_test))
-    model.save("./Models/dense1models")
-    y_pred = model.predict(X_validate)
+    # model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
+    # anne = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, min_lr=1e-3)
+    # model.fit(X_aug, y_aug, epochs=10, callbacks=[anne], validation_data=(X_test, y_test))
+    # model.save("./Models/dense1models")
+    # y_pred = model.predict(X_validate)
 
-    # FM.createDenseModels("./Models/1models", 1, BC.create_dense_model, X_aug, y_aug, 50, (X_test, y_test))
+    FM.createDenseModels("./Models/dense1models", 1, BC.create_dense_model, X_aug, y_aug, 10, (X_test, y_test))
     # FM.loadModels("./Models/5models")
     # FIM.createIndModels("./Models/5indmodels", 5, BC.create_model, X_aug, y_aug, 10, (X_test, y_test))
     # FIM.loadModels("./Models/5indmodels")
-    # y_pred = FM.predictValues(X_validate)
+    y_pred = FM.predictValues(X_validate)
     # y_ind_pred = FIM.predictValues(X_validate)
 
     # model = BC.create_model()

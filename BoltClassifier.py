@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 from keras import layers, models, Model
@@ -70,10 +71,11 @@ class BoltClassifier:
 
         preds = Dense(11, activation='softmax')(x)
         self.model = Model(inputs=densemodel.input, outputs=preds)
-        for layer in self.model.layers[:-8]:
+        print(np.shape(self.model.layers))
+        for layer in self.model.layers[:-435]:
             layer.trainable = False
 
-        for layer in self.model.layers[-8:]:
+        for layer in self.model.layers[-435:]:
             layer.trainable = True
         self.model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                            metrics=['accuracy'])
