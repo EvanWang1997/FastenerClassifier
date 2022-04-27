@@ -1,5 +1,5 @@
 import numpy as np
-
+from ThresholdContour import ThresholdContour
 
 def process_and_split_data(data):
     v, h = np.shape(data)
@@ -73,6 +73,15 @@ def color_train_test_split(data):
     y_test = test[:, h - 1]
 
     return X_train, y_train, X_test, y_test
+
+def thresh_X(data, thresh):
+    TC = ThresholdContour()
+    v,h = np.shape(data)
+    x = (data[:, :h-1])
+    x = TC.ThresholdAllData(x, thresh)
+    data[:, :h-1] = x
+
+    return data
 
 
 

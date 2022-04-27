@@ -1,9 +1,10 @@
 import numpy as np
 import tensorflow as tf
+import utils
 
 from ImageResize import ImageResizer
 from BoltClassifier import BoltClassifier
-from RandomForestModels import RandomForestModels
+from EnsembleModels import EnsembleModels
 from DataAugmentation import DataAugmentation
 from DataRectifier import DataRectifier
 from DenseModel import DensenetClassifier
@@ -15,7 +16,7 @@ if __name__ == '__main__':
     IR = ImageResizer()
     BC = BoltClassifier(2)
     DA = DataAugmentation()
-    FM = RandomForestModels()
+    FM = EnsembleModels()
     DR = DataRectifier()
     DM = DensenetClassifier()
     # IR.resize_all("./Data/Validation Set/", "./Data/Validation10%/", 10)
@@ -26,7 +27,8 @@ if __name__ == '__main__':
     # data2 = IR.load_data("./Data/Validation10%Color.pkl")
     # data2 = IR.load_data("./Data/Validation10%Color.pkl")
     # data = np.vstack((data1, data2))
-    # data = DR.imperial_metric_datamap(data)
+    data = DR.imperial_metric_datamap(data)
+    data = utils.thresh_X(data, 120)
     # data, X_validate, y_validate = utils.color_data_validation_split(data)
     # X_validate, y_validate = utils.return_all_validation_data(data)
     # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
@@ -45,8 +47,10 @@ if __name__ == '__main__':
     # FIM.loadModels("./Models/5indmodels")
     # y_pred = FM.predictValues(X_validate)
     # y_ind_pred = FIM.predictValues(X_validate)
-    model = DM.train_model(data, 20, 11)
-    FM.saveModel("./Models/8layers+Densenet201+20epochs+All11OrigDatatest", model)
+    v,h = np.shape(data)
+    print(data[:, h-1])
+    model = DM.train_model(data, 20, 2)
+    FM.saveModel("./Models/8layers+Densenet201+20epochs+MIThreshDataset", model)
     # model = BC.create_model()
     # model.summary()
     #

@@ -8,7 +8,7 @@ import keras_tuner as kt
 import utils
 
 
-class RandomForestModels:
+class EnsembleModels:
 
     def __init__(self):
         self.models = []
