@@ -40,6 +40,13 @@ class RandomForestModels:
             model.save(modelsfolder + "/" + str(i))
             del model
 
+    def saveModel(self, modelsfolder, model):
+        if not os.path.exists(modelsfolder):
+            os.makedirs(modelsfolder)
+
+        model.save(modelsfolder)
+
+
     def createRandomDataModels(self, modelsfolder, nummodels, kmfunction, data, epochs):
         self.nummodels = nummodels
         self.models = []
