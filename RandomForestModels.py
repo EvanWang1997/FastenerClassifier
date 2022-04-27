@@ -73,9 +73,22 @@ class RandomForestModels:
                                               replace=False)
             x_rand_sample = xtrain[random_indices, :]
             y_rand_sample = ytrain[random_indices]
-            model = kmfunction()
+            tuner = kt.RandomSearch(kmfunction,
+                                    objective='val_accuracy',
+                                    max_trials=5,
+                                    executions_per_trial=3,
+                                    directory='tuner',
+                                    project_name='BoltDenseNet')
+            tuner.search_space_summary()
+            stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
             anne = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, min_lr=1e-3)
-            model.fit(x_rand_sample, y_rand_sample, epochs=epochs, callbacks=[anne], validation_data=testingdata)
+            tuner.search(xtrain, ytrain, epochs=epochs, validation_data=testingdata,
+                         callbacks=[stop_early])
+            tuner.results_summary()
+            best_hps = tuner.get_best_hyperparameters()[0]
+            model = tuner.hypermodel.build(best_hps)
+            model.fit(x_rand_sample, y_rand_sample, epochs=epochs, callbacks=[anne],
+                      validation_data=testingdata)
             self.models.append(model)
             model.save(modelsfolder + "/" + str(i))
             print("completed ", i + 1, " models out of ", nummodels)

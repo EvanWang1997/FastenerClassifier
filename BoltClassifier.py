@@ -3,7 +3,7 @@ import tensorflow as tf
 
 from keras import layers, models, Model
 from keras.applications.densenet import DenseNet121
-from keras.layers import GlobalAveragePooling2D, BatchNormalization, Dropout, Dense
+from keras.layers import GlobalAveragePooling2D, BatchNormalization, Dropout, Dense, Conv2D, MaxPool2D
 
 
 class BoltClassifier:
@@ -53,29 +53,39 @@ class BoltClassifier:
         self.model.add(layers.Dense(11, activation="softmax"))
 
         self.model.compile(optimizer='adam',
-                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy'])
+                           loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                           metrics=['accuracy'])
         return self.model
 
-    def create_dense_model(self):
-        densemodel = DenseNet121(weights='imagenet',include_top=False, input_shape=(216, 288, 3))
+    def create_dense_model(self, hp):
+        densemodel = DenseNet121(weights='imagenet', include_top=False, input_shape=(216, 288, 3))
         x = densemodel.output
 
+        # providing the range for hidden layers
+        # for i in range(hp.Int('num_of_layers', 1, 10)):
+        #     # providing range for number of neurons in hidden layers
+        #     x = Conv2D(hp.Int('num_of_neurons' + str(i), min_value=32, max_value=128, step=32), 3,
+        #                padding="same", activation="relu")(x)
+        #     x = MaxPool2D()(x)
         x = GlobalAveragePooling2D()(x)
         x = BatchNormalization()(x)
         x = Dropout(0.5)(x)
-        x = Dense(1024, activation='relu')(x)
-        x = Dense(512, activation='relu')(x)
+        # providing the range for hidden layers
+        for i in range(hp.Int('num_of_layers', 1, 10)):
+            # providing range for number of neurons in hidden layers
+            x = Dense(units=hp.Int('num_of_neurons' + str(i), min_value=32, max_value=1024, step=124),
+                      activation='relu')(x)
         x = BatchNormalization()(x)
         x = Dropout(0.5)(x)
 
         preds = Dense(11, activation='softmax')(x)
         self.model = Model(inputs=densemodel.input, outputs=preds)
         print(np.shape(self.model.layers))
-        for layer in self.model.layers[:-435]:
+        trainable_layers = hp.Int('num_of_layers', min_value=8, max_value=408, step=40)
+        for layer in self.model.layers[:-trainable_layers]:
             layer.trainable = False
 
-        for layer in self.model.layers[-435:]:
+        for layer in self.model.layers[-trainable_layers:]:
             layer.trainable = True
         self.model.compile(optimizer='Adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                            metrics=['accuracy'])
