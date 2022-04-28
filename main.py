@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # data2 = IR.load_data("./Data/Validation10%Color.pkl")
     # data = np.vstack((data1, data2))
     data = DR.imperial_metric_datamap(data)
-    data = utils.thresh_X(data, 120)
+    data = utils.thresh_X(data, 130)
     # data, X_validate, y_validate = utils.color_data_validation_split(data)
     # X_validate, y_validate = utils.return_all_validation_data(data)
     # X_aug, y_aug = DA.aug_data(X_train, y_train, np.shape(X_train)[0])
