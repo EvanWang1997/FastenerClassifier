@@ -5,9 +5,9 @@ from keras import layers, models
 
 class BoltClassifier:
 
-    def __init__(self):
+    def __init__(self, outputclasses = 11):
         self.model = models.Sequential()
-
+        self.outputclasses = outputclasses
     def create_model(self):
         self.model = models.Sequential()
         self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 1)))
@@ -22,8 +22,43 @@ class BoltClassifier:
 
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(128, activation="relu"))
-        self.model.add(layers.Dense(11, activation="softmax"))
+        self.model.add(layers.Dense(self.outputclasses, activation="softmax"))
         return self.model
+
+    def create_simple_model(self):
+        self.model = models.Sequential()
+        self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 1)))
+        self.model.add(layers.Dropout(0.4))
+
+        self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 1)))
+        self.model.add(layers.Dropout(0.4))
+
+        self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 1)))
+        self.model.add(layers.Dropout(0.4))
+
+        self.model.add(layers.Flatten())
+        self.model.add(layers.Dense(128, activation="relu"))
+        self.model.add(layers.Dense(self.outputclasses, activation="softmax"))
+        return self.model
+
+    def create_color_model(self):
+        self.model = models.Sequential()
+        self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 3)))
+        self.model.add(layers.MaxPool2D())
+
+        self.model.add(layers.Conv2D(32, 3, padding="same", activation="relu", input_shape=(216, 288, 3)))
+        self.model.add(layers.MaxPool2D())
+
+        self.model.add(layers.Conv2D(64, 3, padding="same", activation="relu", input_shape=(216, 288, 3)))
+        self.model.add(layers.MaxPool2D())
+        self.model.add(layers.Dropout(0.6))
+
+        self.model.add(layers.Flatten())
+        self.model.add(layers.Dense(128, activation="relu"))
+        self.model.add(layers.Dense(self.outputclasses, activation="relu"))
+        return self.model
+
+
 
     def create_hyper_model(self, hp):
         self.model = models.Sequential()
